@@ -1,69 +1,93 @@
 import tkinter as tk
 from tkinter import ttk
 
-def create_frame1(root):
-    frame1 = tk.Frame(root, bg="blue", width=400, height=400)
-    frame1.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
+column_names = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday"
+]
 
-    label1 = tk.Label(frame1, text="Frame 1", fg="white", bg="blue", font=("Helvetica", 16))
-    label1.pack(padx=10, pady=10)
+button_labels = [
+    "File Menu",
+    "Demo Time...",
+    "Freeze Cell...",
+    "Find (Ctrl-F)",
+    "Find/Replace",
+    "Swap Time...",
+    "Remove Cl...",
+    "Print Menu",
+    "Global Cou...",
+    "Multi Freeze",
+    "Input Wizard",
+    "Time Slot S...",
+    "Multi Select...",
+    "SCHOOL/C...",
+    "Printer: No...",
+    "Remove Ga...",
+    "Clear Freez",
+    "Print All Cl...",
+    "Insert Row",
+    "Delete Row",
+    "Help"
+]
 
-    # Create a Treeview widget (spreadsheet) in frame1
-    tree1 = ttk.Treeview(frame1, columns=("Column1", "Column2", "Column3"))
-    tree1.heading("#1", text="Column 1")
-    tree1.heading("#2", text="Column 2")
-    tree1.heading("#3", text="Column 3")
+def create_frame(root, title, row, column):
+    frame = tk.Frame(root, bg="white", width=400, height=300)
+    frame.grid(row=row, column=column, padx=10, pady=10, sticky="nsew")
 
-    # Insert some sample data
-    for i in range(50):
-        tree1.insert("", "end", values=(f"Data {i+1}", f"Data {i+2}", f"Data {i+3}"))
+    label = tk.Label(frame, text=title, font=("Helvetica", 16))
+    label.pack(padx=10, pady=10)
 
-    tree1.pack(expand=True, fill="both", side="left")  # Adjust the side to the left
+    # Define a custom style with cell separation
+    style = ttk.Style()
+    style.configure("Treeview", rowheight=25, font=("Helvetica", 12))
+    style.layout("Treeview.Item",
+                 [('Treeitem.padding',
+                   {'sticky': 'nswe',
+                    'children': [('Treeitem.indicator', {'side': 'left', 'sticky': ''}),
+                                 ('Treeitem.image', {'side': 'left', 'sticky': ''}),
+                                 ('Treeitem.text', {'side': 'left', 'sticky': ''})]})])
 
-    # Create a vertical scrollbar for the spreadsheet
-    scrollbar = tk.Scrollbar(frame1, orient="vertical", command=tree1.yview)
-    scrollbar.pack(side="right", fill="y")  # Adjust the side to the right
+    treeview = ttk.Treeview(frame, columns=column_names, show="headings")
+    
+    # Set column headings and adjust column width
+    for col_name in column_names:
+        treeview.heading(col_name, text=col_name)
+        treeview.column(col_name, width=80)  # Adjust the width as needed
 
-    # Configure the spreadsheet to use the scrollbar
-    tree1.configure(yscrollcommand=scrollbar.set)
+    for i in range(1, 101):  # Increase the number of rows for scrolling demonstration
+        treeview.insert("", "end", values=(f"Row {i}", f"Data {i*2}", f"Data {i*3}", f"Data {i*4}",
+                                           f"Data {i*5}", f"Data {i*6}", f"Data {i*7}"))
 
-def create_frame2(root):
-    frame2 = tk.Frame(root, bg="green", width=400, height=400)
-    frame2.grid(row=0, column=1, padx=10, pady=10, sticky="nsew")
+    treeview.pack(expand=True, fill="both")
 
-    label2 = tk.Label(frame2, text="Frame 2", fg="white", bg="green", font=("Helvetica", 16))
-    label2.pack(padx=10, pady=10)
-
-    # Create a Treeview widget (table) in frame2
-    table2 = ttk.Treeview(frame2, columns=("Column1", "Column2", "Column3"))
-    table2.heading("#1", text="Column 1")
-    table2.heading("#2", text="Column 2")
-    table2.heading("#3", text="Column 3")
-
-    # Insert some sample data
-    for i in range(5):
-        table2.insert("", "end", values=(f"Data {i+6}", f"Data {i+7}", f"Data {i+8}"))
-
-    table2.pack(expand=True, fill="both")
+    # Add a vertical scrollbar to the right of the Treeview
+    scrollbar = ttk.Scrollbar(frame, orient="vertical", command=treeview.yview)
+    scrollbar.pack(side="right", fill="y")
+    treeview.configure(yscrollcommand=scrollbar.set)
 
 def create_buttons(root):
     button_frame = tk.Frame(root)
-    button_frame.grid(row=1, column=0, columnspan=2, padx=10, pady=10, sticky="se")
+    button_frame.grid(row=1, column=1, sticky="se", padx=10, pady=10)
 
-    # Create 24 buttons
-    for i in range(24):
-        button = tk.Button(button_frame, text=f"Button {i+1}")
+    # Create buttons with specified labels
+    for i, label_text in enumerate(button_labels):
+        button = tk.Button(button_frame, text=label_text)
         button.grid(row=i // 4, column=i % 4, padx=5, pady=5)
 
 def main():
     root = tk.Tk()
-    root.title("Two Frames with Spreadsheet, Buttons, and Scrollbar")
+    root.title("Two Frames with Spreadsheets and Buttons")
 
-    create_frame1(root)
-    create_frame2(root)
+    create_frame(root, "Frame 1", 0, 0)
+    create_frame(root, "Frame 2", 0, 1)
     create_buttons(root)
 
-    # Configure row and column weights for resizing
+    # Configure row and column weights
     root.rowconfigure(0, weight=1)
     root.columnconfigure(0, weight=1)
     root.columnconfigure(1, weight=1)
