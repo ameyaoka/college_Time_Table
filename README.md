@@ -1,2 +1,2 @@
 # college_Time_Table
-design college time table in python 
+app in python to design college timetable .
