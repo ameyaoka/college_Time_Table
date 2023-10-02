@@ -2,13 +2,13 @@ import tkinter as tk
 from tkinter import ttk
 
 column_names = [
+    "Time",
     "Monday",
     "Tuesday",
     "Wednesday",
     "Thursday",
     "Friday",
-    "Saturday",
-    "Sunday"
+    "Saturday"
 ]
 
 button_labels = [
@@ -60,7 +60,7 @@ def create_frame(root, title, row, column):
         treeview.column(col_name, width=80)  # Adjust the width as needed
 
     for i in range(1, 101):  # Increase the number of rows for scrolling demonstration
-        treeview.insert("", "end", values=(f"Row {i}", f"Data {i*2}", f"Data {i*3}", f"Data {i*4}",
+        treeview.insert("", "end", values=(f"Time {i}", f"Data {i*2}", f"Data {i*3}", f"Data {i*4}",
                                            f"Data {i*5}", f"Data {i*6}", f"Data {i*7}"))
 
     treeview.pack(expand=True, fill="both")
@@ -79,6 +79,16 @@ def create_buttons(root):
         button = tk.Button(button_frame, text=label_text)
         button.grid(row=i // 4, column=i % 4, padx=5, pady=5)
 
+def create_teacher_code_entry(root):
+    entry_frame = tk.Frame(root)
+    entry_frame.grid(row=1, column=0, sticky="sw", padx=10, pady=10)
+
+    label = tk.Label(entry_frame, text="Teacher Code:")
+    label.pack(side="left")
+
+    entry = tk.Entry(entry_frame)
+    entry.pack(side="left")
+
 def main():
     root = tk.Tk()
     root.title("Two Frames with Spreadsheets and Buttons")
@@ -86,6 +96,7 @@ def main():
     create_frame(root, "Frame 1", 0, 0)
     create_frame(root, "Frame 2", 0, 1)
     create_buttons(root)
+    create_teacher_code_entry(root)
 
     # Configure row and column weights
     root.rowconfigure(0, weight=1)
