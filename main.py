@@ -1,4 +1,4 @@
-
+import tkinter as tk
 from tkinter import ttk
 from tkinter import simpledialog
 from tkinter.simpledialog import Dialog
@@ -37,6 +37,9 @@ button_labels = [
     "Help"
 ]
 
+# Create a dictionary to store editable cell values
+editable_cells = {}
+
 def create_frame(root, title, row, column):
     frame = tk.Frame(root, bg="white", width=400, height=300)
     frame.grid(row=row, column=column, padx=10, pady=10, sticky="nsew")
@@ -54,7 +57,7 @@ def create_frame(root, title, row, column):
                                  ('Treeitem.image', {'side': 'left', 'sticky': ''}),
                                  ('Treeitem.text', {'side': 'left', 'sticky': ''})]})])
 
-    treeview = ttk.Treeview(frame, columns=column_names, show="headings")
+    treeview = ttk.Treeview(frame, columns=column_names, show="headings", selectmode="browse")
     
     # Set column headings and adjust column width
     for col_name in column_names:
@@ -62,8 +65,8 @@ def create_frame(root, title, row, column):
         treeview.column(col_name, width=80)  # Adjust the width as needed
 
     for i in range(1, 101):  # Increase the number of rows for scrolling demonstration
-        treeview.insert("", "end", values=(f"Time {i}", f"Data {i*2}", f"Data {i*3}", f"Data {i*4}",
-                                           f"Data {i*5}", f"Data {i*6}", f"Data {i*7}"))
+        item_values = [f"Time {i}"] + [f"Data {i*j}" for j in range(2, 9)]
+        treeview.insert("", "end", values=item_values)
 
     treeview.pack(expand=True, fill="both")
 
@@ -71,6 +74,43 @@ def create_frame(root, title, row, column):
     scrollbar = ttk.Scrollbar(frame, orient="vertical", command=treeview.yview)
     scrollbar.pack(side="right", fill="y")
     treeview.configure(yscrollcommand=scrollbar.set)
+
+
+
+
+    # Bind double-click event to each cell
+    for col_name in column_names:
+        treeview.bind('<Double-1>', lambda event, col=col_name: edit_cell(event, col, treeview))
+
+def edit_cell(event, column, treeview):
+    item = treeview.selection()[0]
+    value = treeview.item(item, 'values')[column_names.index(column)]
+
+    # Create an Entry widget to edit the cell
+    entry = tk.Entry(treeview, justify='center')
+    entry.insert(0, value)
+    
+    # Get the column index using the column name
+    col_index = column_names.index(column)
+    
+    entry.grid(row=event.widget.index(item), column=col_index + 1, padx=1, pady=1, sticky="nsew")
+    entry.bind('<Return>', lambda event, item=item, column=column, entry=entry: save_edit(event, item, column, entry))
+
+def save_edit(event, item, column, entry):
+    new_value = entry.get()
+    event.widget.item(item, values=(event.widget.item(item, "values")[0], new_value))
+    entry.grid_remove()  # Remove the Entry widget
+
+
+
+def save_edit(event, item, column, entry):
+    edited_value = entry.get()
+    event.widget.item(item, values=(event.widget.item(item, "values")[0], edited_value))
+    entry.destroy()
+    del editable_cells[(item, column)]
+
+def cancel_edit(event, entry):
+    entry.destroy()
 
 def create_buttons(root):
     global file_button, print_button, school_college_button, find_button, find_replace_button
