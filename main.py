@@ -42,7 +42,6 @@ def create_frame(root):
 	global sheet1 
 	frame1 = tk.Frame(root, bg="white", width=700, height=300)
 	frame1.grid(row=0 ,column=0,padx=10, pady =10 ,sticky="nsew")
-
 	sheet1 = Sheet(frame1,width = 660 ,height=400, headers =["time","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"])
 	frame2 = tk.Frame(root, bg="white", width=700, height=300)
 	frame2.grid( row=0 , column=1 , padx=10  ,pady=10, sticky="nsew" )
