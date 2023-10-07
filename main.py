@@ -4,7 +4,7 @@ from tksheet import Sheet  # for spreadsheet like excel
 from tkinter import ttk
 from tkinter import simpledialog
 from tkinter.simpledialog import Dialog # to show dialog box when button pressed
-
+import csv
 from tkinter import filedialog  # load data from file
 
 
@@ -37,39 +37,42 @@ button_labels = [
 
 
 
-def create_frame(root, title, row, column):
-    frame = tk.Frame(root, bg="white", width=700, height=300)
-    frame.grid(row=row, column=column, padx=10, pady=10, sticky="nsew")
+def create_frame(root):
 
-    label = tk.Label(frame, text=title, font=("Helvetica", 16))
-    label.pack(padx=10, pady=10)
+	global sheet1 
+	frame1 = tk.Frame(root, bg="white", width=700, height=300)
+	frame1.grid(row=0 ,column=0, sticky="nsew")
 
-    sheet = Sheet(frame,width = 660 ,height=400, headers =["time","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"])
+	sheet1 = Sheet(frame1,width = 660 ,height=400, headers =["time","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"])
+	frame2 = tk.Frame(root, bg="white", width=700, height=300)
+	frame2.grid( row=0 , column=1, sticky="nsew" )
 
-    sheet.enable_bindings(
-    (
-        "single_select",
-        "arrowkeys",
-        "edit_cell",
-        "column_width_resize",
-        "double_click_column_resize" # added double click column resize
-    )
-)
+	sheet2 = Sheet(frame2,width = 660 ,height=400, headers =["time","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"])
 
-    # Add some data to the sheet
-    data = [
-	    ["A", "B", "C"],
-	    [1, 2, 3],
-	    ["ameya", 5, 6],
-	    [7, 8, 9]
-    ]
-    sheet.set_sheet_data(data)
+	sheet1.enable_bindings(
+			(
+			 "single_select",
+			 "arrowkeys",
+			 "edit_cell",
+			 "column_width_resize",
+			 "double_click_column_resize" # added double click column resize
+			)
+			)
+
+	sheet2.enable_bindings(
+			(
+			 "single_select",
+			 "arrowkeys",
+			 "edit_cell",
+			 "column_width_resize",
+			 "double_click_column_resize" # added double click column resize
+			)
+			)
 
 
-    sheet.pack(fill=BOTH, expand=True)
 
-	
-
+	sheet1.pack(side="right",fill=BOTH, expand=True)
+	sheet2.pack(side="left" , fill=BOTH, expand=True)
 
 
 def create_buttons(root):
@@ -102,9 +105,9 @@ def create_buttons(root):
 def show_file_menu():
     file_menu = tk.Menu(root, tearoff=0)
     file_menu.add_command(label="New Timetable")
-    file_menu.add_command(label="Save Timetable" , command=save_sheet_data)
+    file_menu.add_command(label="Save Timetable" , command=save_to_csv)
     file_menu.add_command(label="Save Timetable As")
-    file_menu.add_command(label="Load Timetable" , command = load_data)
+    file_menu.add_command(label="Load Timetable" , command=load_data )
     file_menu.add_separator()
     file_menu.add_command(label="Close Popup")
 
@@ -180,24 +183,31 @@ def create_teacher_code_entry(root):
     entry = tk.Entry(entry_frame)
     entry.pack(side="left")
 
+
+
+
 # save data in spreadsheet . 
+def save_to_csv():
+    # Get the data from the tksheet widget
+    data = sheet1.get_sheet_data()
 
-def save_sheet_data():
-    # Get the sheet data
-    sheet_data = Sheet.get_sheet_data()
+    # Open a file dialog to choose the save location and file name
+    file_path = filedialog.asksaveasfilename(defaultextension=".csv", filetypes=[("CSV files", "*.csv")])
+    if file_path:
+        # Save the data to the chosen file
+        with open(file_path, "w") as file:
+            for row in data:
+                file.write(",".join(row) + "\n")
 
-    # Write the sheet data to a file
-    with open("data.txt", "w") as f:
-        for row in sheet_data:
-            f.write(",".join(str(cell) for cell in row) + "\n")
 
-# load data in spreadsheet 
+
+
 def load_data():
-    file_path = filedialog.askopenfilename(filetypes=[("CSV files", ".csv")])
+    file_path = filedialog.askopenfilename(filetypes=[("CSV Files", "*.csv")])
     if file_path:
         with open(file_path, "r") as file:
             data = [line.strip().split(",") for line in file]
-        sheet.set_sheet_data(data)
+            sheet1.set_sheet_data(data)
 
 
 
@@ -206,12 +216,9 @@ def main():
     global root
     root = tk.Tk()
     root.title("Timetable")
-
-    create_frame(root, "Frame 1", 0, 0)
-    create_frame(root, "Frame 2", 0, 1)
+    create_frame(root)
     create_buttons(root)
     create_teacher_code_entry(root)
-
     #root.rowconfigure(0, weight=1)
     #root.columnconfigure(0, weight=1)
     #root.columnconfigure(1, weight=1)
