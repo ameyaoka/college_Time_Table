@@ -41,13 +41,13 @@ def create_frame(root):
 
 	global sheet1 
 	frame1 = tk.Frame(root, bg="white", width=700, height=300)
-	frame1.grid(row=0 ,column=0, sticky="nsew")
+	frame1.grid(row=0 ,column=0,padx=10, pady =10 ,sticky="nsew")
 
 	sheet1 = Sheet(frame1,width = 660 ,height=400, headers =["time","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"])
 	frame2 = tk.Frame(root, bg="white", width=700, height=300)
-	frame2.grid( row=0 , column=1, sticky="nsew" )
+	frame2.grid( row=0 , column=1 , padx=10  ,pady=10, sticky="nsew" )
 
-	sheet2 = Sheet(frame2,width = 660 ,height=400, headers =["time","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"])
+	sheet2 = Sheet(frame2,width = 660 ,height=500, headers =["time","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"])
 
 	sheet1.enable_bindings(
 			(
@@ -184,20 +184,18 @@ def create_teacher_code_entry(root):
     entry.pack(side="left")
 
 
-
-
-# save data in spreadsheet . 
 def save_to_csv():
     # Get the data from the tksheet widget
     data = sheet1.get_sheet_data()
 
     # Open a file dialog to choose the save location and file name
-    file_path = filedialog.asksaveasfilename(defaultextension=".csv", filetypes=[("CSV files", "*.csv")])
+    file_path = filedialog.asksaveasfilename(defaultextension=".csv", filetypes=[("CSV files", "*.csv")], initialfile="data.csv")
     if file_path:
         # Save the data to the chosen file
         with open(file_path, "w") as file:
             for row in data:
                 file.write(",".join(row) + "\n")
+
 
 
 
