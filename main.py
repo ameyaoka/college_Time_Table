@@ -1,17 +1,14 @@
 import tkinter as tk
+from tkinter import *     # build GUI in python
+from tksheet import Sheet  # for spreadsheet like excel 
 from tkinter import ttk
 from tkinter import simpledialog
-from tkinter.simpledialog import Dialog
+from tkinter.simpledialog import Dialog # to show dialog box when button pressed
 
-column_names = [
-    "Time",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday"
-]
+from tkinter import filedialog  # load data from file
+
+
+
 
 button_labels = [
     "File Menu",
@@ -37,80 +34,43 @@ button_labels = [
     "Help"
 ]
 
-# Create a dictionary to store editable cell values
-editable_cells = {}
+
+
 
 def create_frame(root, title, row, column):
-    frame = tk.Frame(root, bg="white", width=400, height=300)
+    frame = tk.Frame(root, bg="white", width=700, height=300)
     frame.grid(row=row, column=column, padx=10, pady=10, sticky="nsew")
 
     label = tk.Label(frame, text=title, font=("Helvetica", 16))
     label.pack(padx=10, pady=10)
 
-    # Define a custom style with cell separation
-    style = ttk.Style()
-    style.configure("Treeview", rowheight=25, font=("Helvetica", 12))
-    style.layout("Treeview.Item",
-                 [('Treeitem.padding',
-                   {'sticky': 'nswe',
-                    'children': [('Treeitem.indicator', {'side': 'left', 'sticky': ''}),
-                                 ('Treeitem.image', {'side': 'left', 'sticky': ''}),
-                                 ('Treeitem.text', {'side': 'left', 'sticky': ''})]})])
+    sheet = Sheet(frame,width = 660 ,height=400, headers =["time","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"])
 
-    treeview = ttk.Treeview(frame, columns=column_names, show="headings", selectmode="browse")
-    
-    # Set column headings and adjust column width
-    for col_name in column_names:
-        treeview.heading(col_name, text=col_name)
-        treeview.column(col_name, width=80)  # Adjust the width as needed
+    sheet.enable_bindings(
+    (
+        "single_select",
+        "arrowkeys",
+        "edit_cell",
+        "column_width_resize",
+        "double_click_column_resize" # added double click column resize
+    )
+)
 
-    for i in range(1, 101):  # Increase the number of rows for scrolling demonstration
-        item_values = [f"Time {i}"] + [f"Data {i*j}" for j in range(2, 9)]
-        treeview.insert("", "end", values=item_values)
-
-    treeview.pack(expand=True, fill="both")
-
-    # Add a vertical scrollbar to the right of the Treeview
-    scrollbar = ttk.Scrollbar(frame, orient="vertical", command=treeview.yview)
-    scrollbar.pack(side="right", fill="y")
-    treeview.configure(yscrollcommand=scrollbar.set)
+    # Add some data to the sheet
+    data = [
+	    ["A", "B", "C"],
+	    [1, 2, 3],
+	    ["ameya", 5, 6],
+	    [7, 8, 9]
+    ]
+    sheet.set_sheet_data(data)
 
 
+    sheet.pack(fill=BOTH, expand=True)
+
+	
 
 
-    # Bind double-click event to each cell
-    for col_name in column_names:
-        treeview.bind('<Double-1>', lambda event, col=col_name: edit_cell(event, col, treeview))
-
-def edit_cell(event, column, treeview):
-    item = treeview.selection()[0]
-    value = treeview.item(item, 'values')[column_names.index(column)]
-
-    # Create an Entry widget to edit the cell
-    entry = tk.Entry(treeview, justify='center')
-    entry.insert(0, value)
-    
-    # Get the column index using the column name
-    col_index = column_names.index(column)
-    
-    entry.grid(row=event.widget.index(item), column=col_index + 1, padx=1, pady=1, sticky="nsew")
-    entry.bind('<Return>', lambda event, item=item, column=column, entry=entry: save_edit(event, item, column, entry))
-
-def save_edit(event, item, column, entry):
-    new_value = entry.get()
-    event.widget.item(item, values=(event.widget.item(item, "values")[0], new_value))
-    entry.grid_remove()  # Remove the Entry widget
-
-
-
-def save_edit(event, item, column, entry):
-    edited_value = entry.get()
-    event.widget.item(item, values=(event.widget.item(item, "values")[0], edited_value))
-    entry.destroy()
-    del editable_cells[(item, column)]
-
-def cancel_edit(event, entry):
-    entry.destroy()
 
 def create_buttons(root):
     global file_button, print_button, school_college_button, find_button, find_replace_button
@@ -142,9 +102,9 @@ def create_buttons(root):
 def show_file_menu():
     file_menu = tk.Menu(root, tearoff=0)
     file_menu.add_command(label="New Timetable")
-    file_menu.add_command(label="Save Timetable")
+    file_menu.add_command(label="Save Timetable" , command=save_sheet_data)
     file_menu.add_command(label="Save Timetable As")
-    file_menu.add_command(label="Load Timetable")
+    file_menu.add_command(label="Load Timetable" , command = load_data)
     file_menu.add_separator()
     file_menu.add_command(label="Close Popup")
 
@@ -220,6 +180,28 @@ def create_teacher_code_entry(root):
     entry = tk.Entry(entry_frame)
     entry.pack(side="left")
 
+# save data in spreadsheet . 
+
+def save_sheet_data():
+    # Get the sheet data
+    sheet_data = Sheet.get_sheet_data()
+
+    # Write the sheet data to a file
+    with open("data.txt", "w") as f:
+        for row in sheet_data:
+            f.write(",".join(str(cell) for cell in row) + "\n")
+
+# load data in spreadsheet 
+def load_data():
+    file_path = filedialog.askopenfilename(filetypes=[("CSV files", ".csv")])
+    if file_path:
+        with open(file_path, "r") as file:
+            data = [line.strip().split(",") for line in file]
+        sheet.set_sheet_data(data)
+
+
+
+
 def main():
     global root
     root = tk.Tk()
@@ -230,12 +212,17 @@ def main():
     create_buttons(root)
     create_teacher_code_entry(root)
 
-    root.rowconfigure(0, weight=1)
-    root.columnconfigure(0, weight=1)
-    root.columnconfigure(1, weight=1)
+    #root.rowconfigure(0, weight=1)
+    #root.columnconfigure(0, weight=1)
+    #root.columnconfigure(1, weight=1)
 
     root.mainloop()
 
 if __name__ == "__main__":
     main()
+
+
+
+
+
 
