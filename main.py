@@ -39,10 +39,18 @@ button_labels = [
 
 def create_frame(root):
 
-	global sheet1 
+	global sheet1 , heading
+	# Frame 1 
+
 	frame1 = tk.Frame(root, bg="white", width=700, height=300)
 	frame1.grid(row=0 ,column=0,padx=10, pady =10 ,sticky="nsew")
 	sheet1 = Sheet(frame1,width = 660 ,height=400, headers =["time","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"])
+
+	heading = tk.Label(frame1, text='college timetable')
+	heading.pack()
+
+	# frame 2 
+
 	frame2 = tk.Frame(root, bg="white", width=700, height=300)
 	frame2.grid( row=0 , column=1 , padx=10  ,pady=10, sticky="nsew" )
 
@@ -75,7 +83,7 @@ def create_frame(root):
 
 
 def create_buttons(root):
-    global file_button, print_button, school_college_button, find_button, find_replace_button
+    global file_button, print_button, school_college_button, find_button, find_replace_button, insert_row_button  
 
     button_frame = tk.Frame(root)
     button_frame.grid(row=1, column=1, sticky="se", padx=10, pady=10)
@@ -89,7 +97,7 @@ def create_buttons(root):
             print_button = tk.Button(button_frame, text=label_text, command=show_print_menu)
             print_button.grid(row=i // 4, column=i % 4, padx=5, pady=5)
         elif label_text == "SCHOOL/C...":
-            school_college_button = tk.Button(button_frame, text=label_text, command=show_school_college_dialog)
+            school_college_button = tk.Button(button_frame, text=label_text, command=change_heading)
             school_college_button.grid(row=i // 4, column=i % 4, padx=5, pady=5)
         elif label_text == "Find (Ctrl-F)":
             find_button = tk.Button(button_frame, text=label_text, command=show_find_dialog)
@@ -97,6 +105,9 @@ def create_buttons(root):
         elif label_text == "Find/Replace":
             find_replace_button = tk.Button(button_frame, text=label_text, command=show_find_replace_dialog)
             find_replace_button.grid(row=i // 4, column=i % 4, padx=5, pady=5)
+        elif label_text == "insert_row":
+            insert_row_button = tk.Button(button_frame, text=label_text, command=insert_row)  
+            insert_row_button.grid(row=i // 4, column=i % 4, padx=5, pady=5)
         else:
             button = tk.Button(button_frame, text=label_text)
             button.grid(row=i // 4, column=i % 4, padx=5, pady=5)
@@ -165,6 +176,7 @@ class FindReplaceDialog(Dialog):
         self.text_to_find = self.find_entry.get()
         self.text_to_replace = self.replace_entry.get()
 
+# perform find_replace in tksheet 
 def show_find_replace_dialog():
     dialog = FindReplaceDialog(root)
     if dialog.text_to_find:
@@ -197,7 +209,7 @@ def save_to_csv():
 
 
 
-
+# function to load data from csv file 
 
 def load_data():
     file_path = filedialog.askopenfilename(filetypes=[("CSV Files", "*.csv")])
@@ -205,6 +217,19 @@ def load_data():
         with open(file_path, "r") as file:
             data = [line.strip().split(",") for line in file]
             sheet1.set_sheet_data(data)
+
+
+def insert_row():
+    sheet1.insert_row()
+
+
+# function to set college name 
+
+def change_heading():
+    new_heading = simpledialog.askstring('set college name' , 'college name')
+    if new_heading:
+        heading.config(text=new_heading)
+
 
 
 
