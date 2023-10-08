@@ -194,19 +194,13 @@ def create_teacher_code_entry(root):
     entry = tk.Entry(entry_frame)
     entry.pack(side="left")
 
-
+# create a button to save the sheet to a CSV file
 def save_to_csv():
-    # Get the data from the tksheet widget
-    data = sheet1.get_sheet_data()
-
-    # Open a file dialog to choose the save location and file name
-    file_path = filedialog.asksaveasfilename(defaultextension=".csv", filetypes=[("CSV files", "*.csv")], initialfile="data.csv")
+    file_path = filedialog.asksaveasfilename(defaultextension='.csv')
     if file_path:
-        # Save the data to the chosen file
-        with open(file_path, "w") as file:
-            for row in data:
-                file.write(",".join(row) + "\n")
-
+        with open(file_path, 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerows(sheet1.get_sheet_data())
 
 
 # function to load data from csv file 
