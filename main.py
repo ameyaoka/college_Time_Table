@@ -156,7 +156,7 @@ def show_find_dialog():
 		    cell_data = sheet1.get_cell_data(i ,j , get_displayed = False)
 		    if (text_to_find == cell_data) :
 			    sheet1.highlight_cells(row=i  ,column=j , bg="yellow")
-#
+
 
 class FindReplaceDialog(Dialog):
     def __init__(self, parent):
@@ -183,13 +183,23 @@ class FindReplaceDialog(Dialog):
         self.text_to_find = self.find_entry.get()
         self.text_to_replace = self.replace_entry.get()
 
+
 # perform find_replace in tksheet 
 def show_find_replace_dialog():
+    # Create a dialog box for finding text using simpledialog
     dialog = FindReplaceDialog(root)
-    if dialog.text_to_find:
-        # Perform the find and replace operation (e.g., search in the spreadsheet)
-        # You can customize this part based on your application
-        print(f"Finding and Replacing: '{dialog.text_to_find}' with '{dialog.text_to_replace}'")
+    num_rows = sheet1.total_rows()
+    num_cols = sheet1.total_columns()
+    for i  in range( num_rows):
+	    for j in range(num_cols):
+		    cell_data = sheet1.get_cell_data(i ,j , get_displayed = False)
+		    if (dialog.text_to_find == cell_data) :
+			    sheet1.set_cell_data(i , j ,dialog.text_to_replace)
+
+
+
+
+
 
 def create_teacher_code_entry(root):
     entry_frame = tk.Frame(root)
