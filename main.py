@@ -14,7 +14,7 @@ button_labels = [
     "File Menu",
     "Print Menu",
     "Demo Time...",
-    "Freeze Cell...",
+    "Freeze Cell",
     "Find (Ctrl-F)",
     "Find/Replace",
     "Swap Time...",
@@ -27,9 +27,9 @@ button_labels = [
     "SCHOOL/C...",
     "Printer: No...",
     "Remove Ga...",
-    "Clear Freez",
+    "unfreeze",
     "Print All Cl...",
-    "Insert Row",
+    "insert row",
     "Delete Row",
     "Help"
 ]
@@ -81,9 +81,8 @@ def create_frame(root):
 	sheet1.pack(side="right",fill=BOTH, expand=True)
 	sheet2.pack(side="left" , fill=BOTH, expand=True)
 
-
 def create_buttons(root):
-    global file_button, print_button, school_college_button, find_button, find_replace_button, insert_row_button  
+    global file_button, print_button, school_college_button, find_button, find_replace_button, insert_row_button , freeze_cell_button , un_freeze_cell_button
 
     button_frame = tk.Frame(root)
     button_frame.grid(row=1, column=1, sticky="se", padx=10, pady=10)
@@ -105,12 +104,19 @@ def create_buttons(root):
         elif label_text == "Find/Replace":
             find_replace_button = tk.Button(button_frame, text=label_text, command=show_find_replace_dialog)
             find_replace_button.grid(row=i // 4, column=i % 4, padx=5, pady=5)
-        elif label_text == "insert_row":
-            insert_row_button = tk.Button(button_frame, text=label_text, command=insert_row)  
+        elif label_text == "insert row":
+            insert_row_button = tk.Button(button_frame, text=label_text, command=insert_row)
             insert_row_button.grid(row=i // 4, column=i % 4, padx=5, pady=5)
+        elif label_text == "Freeze Cell":
+            freeze_cell_button= tk.Button(button_frame, text=label_text, command=freeze_cell)
+            freeze_cell_button.grid(row=i // 4, column=i % 4, padx=5, pady=5)
+        elif label_text == "unfreeze":
+            un_freeze_cell_button= tk.Button(button_frame, text=label_text, command=un_freeze_cell)
+            un_freeze_cell_button.grid(row=i // 4, column=i % 4, padx=5, pady=5)
         else:
             button = tk.Button(button_frame, text=label_text)
             button.grid(row=i // 4, column=i % 4, padx=5, pady=5)
+
 
 def show_file_menu():
     file_menu = tk.Menu(root, tearoff=0)
@@ -231,7 +237,7 @@ def load_data():
 
 
 def insert_row():
-    sheet1.insert_row()
+	sheet1.insert_row(idx=0, values=["value1", "value2", "value3"])
 
 
 # function to set college name 
@@ -240,6 +246,32 @@ def change_heading():
     new_heading = simpledialog.askstring('set college name' , 'college name')
     if new_heading:
         heading.config(text=new_heading)
+
+# function to  freeze selected cell 
+
+def freeze_cell():
+	selected_cells = sheet1.get_currently_selected()
+	if selected_cells:
+		row = selected_cells.row
+		column = selected_cells.column
+		sheet1.readonly_cells(row = row , column = column , readonly = True, redraw = True)
+	else:
+		print("No cell is selected")
+
+
+def un_freeze_cell():
+	selected_cells = sheet1.get_currently_selected()
+	if selected_cells:
+		row = selected_cells.row
+		column = selected_cells.column
+		sheet1.readonly_cells(row = row , column = column , readonly = False, redraw = True)
+	else:
+		print("No cell is selected")
+
+
+def test():
+	print("working")
+
 
 
 
