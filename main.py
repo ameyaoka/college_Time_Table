@@ -30,7 +30,7 @@ button_labels = [
     "unfreeze",
     "Print All Cl...",
     "insert row",
-    "Delete Row",
+    "delete row",
     "Help"
 ]
 
@@ -82,7 +82,7 @@ def create_frame(root):
 	sheet2.pack(side="left" , fill=BOTH, expand=True)
 
 def create_buttons(root):
-    global file_button, print_button, school_college_button, find_button, find_replace_button, insert_row_button , freeze_cell_button , un_freeze_cell_button
+    global file_button, print_button, school_college_button, find_button, find_replace_button, insert_row_button, freeze_cell_button, un_freeze_cell_button, delete_row_button
 
     button_frame = tk.Frame(root)
     button_frame.grid(row=1, column=1, sticky="se", padx=10, pady=10)
@@ -108,11 +108,14 @@ def create_buttons(root):
             insert_row_button = tk.Button(button_frame, text=label_text, command=insert_row)
             insert_row_button.grid(row=i // 4, column=i % 4, padx=5, pady=5)
         elif label_text == "Freeze Cell":
-            freeze_cell_button= tk.Button(button_frame, text=label_text, command=freeze_cell)
+            freeze_cell_button = tk.Button(button_frame, text=label_text, command=freeze_cell)
             freeze_cell_button.grid(row=i // 4, column=i % 4, padx=5, pady=5)
         elif label_text == "unfreeze":
-            un_freeze_cell_button= tk.Button(button_frame, text=label_text, command=un_freeze_cell)
+            un_freeze_cell_button = tk.Button(button_frame, text=label_text, command=un_freeze_cell)
             un_freeze_cell_button.grid(row=i // 4, column=i % 4, padx=5, pady=5)
+        elif label_text == "delete row":
+            delete_row_button = tk.Button(button_frame, text=label_text, command=delete_row)
+            delete_row_button.grid(row=i // 4, column=i % 4, padx=5, pady=5)
         else:
             button = tk.Button(button_frame, text=label_text)
             button.grid(row=i // 4, column=i % 4, padx=5, pady=5)
@@ -154,13 +157,14 @@ def show_school_college_dialog():
 
 def show_find_dialog():
     # Create a dialog box for finding text using simpledialog
-    text_to_find = simpledialog.askstring("Find (Ctrl-F)", "Input Word to Find:")
+    text_to_find = simpledialog.askstring("Find (Ctrl-F)", "Input Word to Find:").lower()
     num_rows = sheet1.total_rows()
     num_cols = sheet1.total_columns()
     for i  in range( num_rows):
 	    for j in range(num_cols):
 		    cell_data = sheet1.get_cell_data(i ,j , get_displayed = False)
-		    if (text_to_find == cell_data) :
+		    cd = cell_data.lower()
+		    if (text_to_find == cd) :
 			    sheet1.highlight_cells(row=i  ,column=j , bg="yellow")
 
 
@@ -240,6 +244,15 @@ def insert_row():
 	sheet1.insert_row(idx=0, values=["value1", "value2", "value3"])
 
 
+def delete_row():
+	selected_cells = sheet1.get_currently_selected()
+	if selected_cells:
+		row = selected_cells.row
+		sheet1.delete_row(idx = row, deselect_all = False, redraw = True)
+	else:
+		print("No cell is selected")
+
+
 # function to set college name 
 
 def change_heading():
@@ -267,6 +280,7 @@ def un_freeze_cell():
 		sheet1.readonly_cells(row = row , column = column , readonly = False, redraw = True)
 	else:
 		print("No cell is selected")
+
 
 
 def test():
