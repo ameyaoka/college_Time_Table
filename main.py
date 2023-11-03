@@ -19,7 +19,7 @@ button_labels = [
     "Find/Replace",
     "Swap Time...",
     "Remove Cl...",
-    "Global Cou...",
+    "Global Count",
     "Multi Freeze",
     "Input Wizard",
     "Time Slot S...",
@@ -82,7 +82,7 @@ def create_frame(root):
 	sheet2.pack(side="left" , fill=BOTH, expand=True)
 
 def create_buttons(root):
-    global file_button, print_button, school_college_button, find_button, find_replace_button, insert_row_button, freeze_cell_button, un_freeze_cell_button, delete_row_button
+    global file_button, print_button, school_college_button, find_button, find_replace_button, insert_row_button, freeze_cell_button, un_freeze_cell_button, delete_row_button, global_count_button, global_count
 
     button_frame = tk.Frame(root)
     button_frame.grid(row=1, column=1, sticky="se", padx=10, pady=10)
@@ -116,6 +116,9 @@ def create_buttons(root):
         elif label_text == "delete row":
             delete_row_button = tk.Button(button_frame, text=label_text, command=delete_row)
             delete_row_button.grid(row=i // 4, column=i % 4, padx=5, pady=5)
+        elif label_text == "Global Count":
+            global_count_button = tk.Button(button_frame, text=label_text, command=global_count)
+            global_count_button.grid(row=i // 4, column=i % 4, padx=5, pady=5)
         else:
             button = tk.Button(button_frame, text=label_text)
             button.grid(row=i // 4, column=i % 4, padx=5, pady=5)
@@ -282,10 +285,25 @@ def un_freeze_cell():
 		print("No cell is selected")
 
 
+def global_count():
+	value_counts = {}
+	num_rows = sheet1.total_rows()
+	num_cols = sheet1.total_columns()
+	for i  in range( num_rows):
+		for j in range(num_cols):
+			cell_data = sheet1.get_cell_data(i ,j , get_displayed = False)
+			if cell_data in value_counts:
+				value_counts[cell_data] += 1
+			else:
+				value_counts[cell_data] = 1
+			
+	for value, count in value_counts.items():
+				print(f"{value}: {count}")
+
+
 
 def test():
 	print("working")
-
 
 
 
